@@ -1,3 +1,6 @@
+import csv
+from datetime import datetime
+
 from walkSat import csv_results
 import matplotlib.pyplot as plt
 
@@ -30,3 +33,9 @@ plt.xlabel('clauses / Symbols ratio m/n')
 plt.ylabel('P(Satisfiable)')
 plt.xticks([0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5])
 plt.show()
+
+# # write the results of each test to a csv file named results + timestamp
+# with open('results_prob_' + datetime.now().timestamp().__str__() + '.csv', 'w', newline='') as myfile:
+#     wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+#     for i in range(0, len(list(values_dict.keys()))):
+#         wr.writerow([list(values_dict.keys())[i], list(values_dict.values())[i]])

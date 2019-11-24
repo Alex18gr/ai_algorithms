@@ -1,3 +1,4 @@
+# The representation class for the boolean saleability CNF problems
 class Dataset:
     def __init__(self, nbvar, nbclauses, symbols, clauses):
         self.nbvar = nbvar

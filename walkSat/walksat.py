@@ -57,12 +57,17 @@ def find_max_satisfied(abs_c, clauses, model):
 
     max_satisfy_symbol = -1
     max_clauses_satisfied = -1
+    # test every symbol in the abs_c symbols array
     for symbol in abs_c:
+        # flip the value of that symbol in the model
         test_model[symbol] = not test_model[symbol]
+        # counter for the satisfied clauses for that symbol flip
         satisfied_clauses_counter = 0
         for c in clauses:
+            # check how many clauses are satisfied with that flip
             if check_clause_true(c, test_model):
                 satisfied_clauses_counter += 1
+        # check if we have a new max in satisfied clauses
         if satisfied_clauses_counter > max_clauses_satisfied:
             max_clauses_satisfied = satisfied_clauses_counter
             max_satisfy_symbol = symbol
@@ -99,22 +104,21 @@ def change_rand_symbol(c, model):
 
 def walkSAT(dataset: Dataset, p=0.5, max_flips=10000):
     start_time = time.time()
-    # your code
-    # elapsed_time = time.time() - start_time
     # assign random values to the clauses variables
-    # model = {bool(random.getrandbits(1)) for s in dataset.symbols}
     model = {s: bool(random.getrandbits(1)) for s in dataset.symbols}
 
+    # check if the random generated model is solution
     while check_model(dataset, model):
         model = {s: bool(random.getrandbits(1)) for s in dataset.symbols}
 
+    # start of the algorithm
     for i in range(max_flips):
         # split satisfied form unsatisfied clauses
-        # satisfied, unsatisfied = [], []
         [satisfied, unsatisfied] = split_clauses(dataset.clauses, model)
-        # print(unsatisfied)
+
+        # select a random unsatisfied clause
         c = random.choice(unsatisfied)
-        # print(c)
+
         if probability(p):
             change_rand_symbol(c, model)
         else:
@@ -124,6 +128,7 @@ def walkSAT(dataset: Dataset, p=0.5, max_flips=10000):
         if check_model(dataset, model):
             return [dataset.nbclauses, dataset.nbvar, time.time() - start_time, i + 1, True, model]
 
+    # here is the case that we dont find any solution after the max flips done
     return [dataset.nbclauses, dataset.nbvar, time.time() - start_time, max_flips, False, model]
 
 
@@ -146,6 +151,7 @@ def check_clause_true(clause, model):
     return False
 
 
+# This main is for test purposes
 def main():
     # d = Dataset(3, 3, [1, 2, 3], [[-3, 1, -2], [-2, -1, 3], [1, -3, 2]])
     for i in range(0, 6):
