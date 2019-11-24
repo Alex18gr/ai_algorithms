@@ -1,8 +1,16 @@
-from utils import Dataset, read_file_input
+import time
+
+from walkSat.utils import Dataset, read_file_input
 import random
 
 
 def check_model(dataset: Dataset, model):
+    """
+    This function checks whether the model is valid for the given dataset
+    :param dataset:
+    :param model:
+    :return:
+    """
     for c in dataset.clauses:
         if not check_clause_true(c, model):
             return False
@@ -10,10 +18,22 @@ def check_model(dataset: Dataset, model):
 
 
 def probability(p):
+    """
+    helper function, return a boolean value with the given probability
+    :param p:
+    :return:
+    """
     return random.random() < p
 
 
 def split_clauses(clauses, model):
+    """
+    Splits the given clauses in 2 lists based on the given model if they are satisfied or unsatisfied from it and return
+    the 2 lists
+    :param clauses:
+    :param model:
+    :return:
+    """
     satisfied, unsatisfied = [], []
     for c in clauses:
         if check_clause_true(c, model):
@@ -24,6 +44,15 @@ def split_clauses(clauses, model):
 
 
 def find_max_satisfied(abs_c, clauses, model):
+    """
+    Finds the symbol of the abs_c clause which when its value is changed, the most clauses of the list clauses
+    are satisfied based on the given model
+    :param abs_c:
+    :param clauses:
+    :param model:
+    :return:
+    """
+
     test_model = model.copy()
 
     max_satisfy_symbol = -1
@@ -41,6 +70,14 @@ def find_max_satisfied(abs_c, clauses, model):
 
 
 def change_max_valid_symbol(c, clauses, model):
+    """
+    changes the value of the symbol of the clause c which when its value is changed, the most clauses are satisfied
+    of the list clauses based on the given model
+    :param c:
+    :param clauses:
+    :param model:
+    :return:
+    """
     abs_c = map(abs, c)
 
     max_satisfy_symbol = find_max_satisfied(abs_c, clauses, model)
@@ -49,18 +86,27 @@ def change_max_valid_symbol(c, clauses, model):
 
 
 def change_rand_symbol(c, model):
+    """
+    changes the value of a random symbol of the clause c
+    :param c:
+    :param model:
+    :return:
+    """
     rand_symbol = abs(random.choice(c))
     # print(rand_symbol)
     model[rand_symbol] = not model[rand_symbol]
 
 
 def walkSAT(dataset: Dataset, p=0.5, max_flips=10000):
+    start_time = time.time()
+    # your code
+    # elapsed_time = time.time() - start_time
     # assign random values to the clauses variables
     # model = {bool(random.getrandbits(1)) for s in dataset.symbols}
     model = {s: bool(random.getrandbits(1)) for s in dataset.symbols}
-    # print(model)
-    if check_model(dataset, model):
-        return model, 0
+
+    while check_model(dataset, model):
+        model = {s: bool(random.getrandbits(1)) for s in dataset.symbols}
 
     for i in range(max_flips):
         # split satisfied form unsatisfied clauses
@@ -76,12 +122,18 @@ def walkSAT(dataset: Dataset, p=0.5, max_flips=10000):
 
         # if unsatisfied is empty found solution
         if check_model(dataset, model):
-            return model, i + 1
+            return [dataset.nbclauses, dataset.nbvar, time.time() - start_time, i + 1, True, model]
 
-    return False, max_flips
+    return [dataset.nbclauses, dataset.nbvar, time.time() - start_time, max_flips, False, model]
 
 
 def check_clause_true(clause, model):
+    """
+    checks if a clause is satisfied based on the given model
+    :param clause:
+    :param model:
+    :return:
+    """
     for c in clause:
         # print(c)
         # print(model[1])
@@ -96,13 +148,10 @@ def check_clause_true(clause, model):
 
 def main():
     # d = Dataset(3, 3, [1, 2, 3], [[-3, 1, -2], [-2, -1, 3], [1, -3, 2]])
-    d = read_file_input()
-    print(d)
-    [valid_model, flips] = walkSAT(d)
-    print("Valid Model: ")
-    print(valid_model)
-    print("total flips: ")
-    print(flips)
+    for i in range(0, 6):
+        d = read_file_input('walkSat/sat_275_50_1_.dimacs')
+        print(d)
+        print(walkSAT(d))
 
 
 if __name__ == '__main__':

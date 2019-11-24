@@ -10,8 +10,8 @@ class Dataset:
             self=self)
 
 
-def read_file_input():
-    f = open('dataset_2.dimacs', 'r')
+def read_file_input(url):
+    f = open(url, 'r')
     # print(f.readlines())
 
     line = f.readline().strip().split(' ')
